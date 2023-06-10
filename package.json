@@ -1,0 +1,21 @@
+{
+  "name": "timetable-api",
+  "version": "1.0.0",
+  "description": "Timetable API that allows teachers to access and edit the timetable but students can only access it",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "cassandra18"
+  },
+  "author": "Cassandra Lelei",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.1.4",
+    "express": "^4.18.2",
+    "mongoose": "^7.2.3",
+    "uuid": "^9.0.0"
+  }
+}
