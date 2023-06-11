@@ -8,7 +8,7 @@ const colors = require('colors');
 //custom imports
 const connectDatabase = require('./config/db');
 const { default: mongoose } = require('mongoose');
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 //connect to database
 connectDatabase();  //this will connect to database
 
@@ -20,13 +20,7 @@ api.use(bodyParser.json());
 
 
 //routes
-api.get('/api', (req, res) => {
-    res.status(200);
-    res.json({
-        message: 'Welcome to the API'
-    });
-});
-
+api.use('/api/teacher', require('./routes/teacher.route'));
 
 
 
