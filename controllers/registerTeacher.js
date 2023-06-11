@@ -11,7 +11,7 @@ const registerHandler = expressAsyncHandler(async (req, res) => {
         const avoidDuplicate = await Teacher.findOne({ email });
         if (avoidDuplicate) {
             res.status(400);
-            throw new Error('User already exists');
+            throw new Error('Teacher already exists');
         }
         const teacher = await Teacher.create({
             name,
@@ -29,11 +29,22 @@ const registerHandler = expressAsyncHandler(async (req, res) => {
             res.status(400);
             throw new Error('Invalid user data');
         }
-    } catch (error) {  
+    } catch (error) {
         res.status(500);
         throw new Error(error);
     }
 });
 
 
-module.exports = { registerHandler };
+//get all teachers
+const getTeachers = expressAsyncHandler(async (req, res) => {
+    try {
+        const teachers = await Teacher.find({});
+        res.json(teachers);
+    } catch (error) {
+        res.status(500)
+        throw new Error(error);
+    }
+});
+
+module.exports = { registerHandler, getTeachers };

@@ -21,7 +21,7 @@ api.use(bodyParser.json());
 
 //routes
 api.use('/api/teacher', require('./routes/teacher.route'));
-
+api.use('/api/timetable', require('./routes/timetable.route'));
 
 
 api.use(errorHandler);
