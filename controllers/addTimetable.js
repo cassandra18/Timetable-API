@@ -43,9 +43,18 @@ const addTimetable = expressAsyncHandler(async (req, res) => {
 });
 
 const getTimetable = expressAsyncHandler(async (req, res) => {
+    const timetable = Timetable.find({});
+    if (timetable && timetable.length > 0){
+        res.status(200).json(timemtable);
 
+    }
+   else {
+    res.status(404).json('No timetable created yet');
+   }
     
 });
 
 
-module.exports = { addTimetable };
+
+
+module.exports = { addTimetable, getTimetable };
