@@ -42,5 +42,10 @@ const addTimetable = expressAsyncHandler(async (req, res) => {
 
 });
 
+const getTimetable = expressAsyncHandler(async (req, res) => {
+
+    
+});
+
 
 module.exports = { addTimetable };
