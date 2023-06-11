@@ -1,64 +1,40 @@
-require('dotenv').config();
-const app = require('./middleware');
-const { Teacher, Timetable } = require('./model');
-const connectToDataBase = require('./db');
+require('dotenv').config()
+const express = require('express');
+const api = express();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const colors = require('colors');
+
+//custom imports
+const connectDatabase = require('./config/db');
+const { default: mongoose } = require('mongoose');
+const { errorHandler } = require('./middleware/errorHandler');
+//connect to database
+connectDatabase();  //this will connect to database
 
 
-const PORT = process.env.PORT || 3000;
+//inbult middleware
+api.use(express.json());
+api.use(express.urlencoded({ extended: true }));
+api.use(bodyParser.json());
 
-//connect to MongoDB
-connectToDataBase();
 
-//using get request, fetch timetable data from the database and populate the teacher field with the name property of the reference teacher
+//routes
+api.use('/api/teacher', require('./routes/teacher.route'));
+api.use('/api/timetable', require('./routes/timetable.route'));
 
-app.get('/timetable', async (req, res) => {
-    try {
-        //fetch timetable data from the database and populate the teacher field  with name property of referenced teacher.
-        const timetable = await Timetable.find().populate('teacher', 'name');
-    
-        //once the population operation is completed send the 'timetable' data as JSON response
-        res.json(timetable);
-    }catch (error) {
 
-        //if the get request fails, throw  and error with a status of 500
-        res.status(500).json({error: 'Failed to fetch timetable'})
-    }
+api.use(errorHandler);
+
+api.listen(process.env.PORT, () => {
+    console.log(`Server is running on port ${process.env.PORT}`.yellow.bold)
+    console.log('attempting to connect to mongodb database...'.dim)
 });
 
-//set up an express route for a POST request
-
-app.post('/timetable', async (req, res) => {
-    
-    //check if the teacher exists using mongoose to find teacher document in the Teacher collection based on the teacherId value provided in the request body
-    try{
-        const teacher = await Teacher.findById(req.body.teacherId);
-        if (!teacher) {
-            //check if teacher was found based on the 'teacherId'. if not found return a status code 404 and send an error message as json response
-            return res.status(404).json({ error: 'Teacher not found' })
-        }
-    
-
-        //create the timetable object using the Timetable model/Schema
-        const timetable = new Timetable({
-        teacher: teacher._id, // assing id retrieved from database
-        day: req.body.day,
-        time: req.body.time,
-        subject: req.body.subject,
-        });
-     
-        //save the newtimetable entries to MongoDB database
-        await timetable.save();
-
-        //if the timetable entry is successfully created, a response with a status code 0f 201 and the created timetable entry as JSON is sent back 
-        res.status(201).json(timetable);
-    } catch (error) {
-        // if an error occurs during the creation of timetable, a response with status code of 500 and a message is sent back
-        res.status(500).json({ error: 'Failed to create timetable'});
-        }
+mongoose.connection.once('open', () => {
+    console.log(`connected to mongodb database at: ${mongoose.connection.host}`.green.bold)
 });
 
-//start the server
-
-app.listen(PORT, () =>{
-console.log(`server started on port ${PORT}`);
+mongoose.connection.on('error', (err) => {
+    console.log(`error: ${err.message}`.red.bold)
 });
